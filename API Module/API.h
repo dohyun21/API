@@ -39,11 +39,14 @@ typedef void(^FailBlock)(NSURLSessionDataTask *task, NSError *error);
 typedef void(^MultiPartFormDataBlock)(id<AFMultipartFormData> data);
 
 #pragma mark - Property List
-@property (nonatomic, strong) NSMutableArray *arrayOfAllTasks;
-@property (nonatomic, strong) NSURLSessionTask *currentTask;
+@property (nonatomic, strong) NSMutableArray *arrayOfAllTasks;                      // 요청중인 Request 정보들
+@property (nonatomic, strong) NSURLSessionTask *currentTask;                        // 마지막 Request 정보
+@property (nonatomic, strong) NSMutableDictionary *endPointDic;                     // EndPoint 목록
 
 #pragma mark - Public Methods
-/*! @brief 에러 Data를 String 값으로 변환 */
+/*! @brief Binary Data to NSString */
++ (NSString *)binaryDataConversionToString:(NSData *)data;
+/*! @brief 에러 Data존재시 NSDictionary, 없을 경우 NSError 반환 */
 + (id)failResponseStringWithError:(NSError *)error;
 /*! @brief HTTP Response 상태 코드 예외처리 및 반환 */
 + (NSInteger)checkStatusCodeWithError:(NSURLSessionDataTask *)task;
@@ -57,5 +60,8 @@ typedef void(^MultiPartFormDataBlock)(id<AFMultipartFormData> data);
 
 #pragma mark - API Request Methods
 - (void)doRequestMethodType:(kHTTPMethodType)method apiType:(kAPIType)apiType parameter:(NSMutableDictionary *)parameter formData:(MultiPartFormDataBlock)formData progress:(ProgressBlock)progress success:(SuccessBlock)success fail:(FailBlock)fail;
+
+/*! @brief Custom Request */
+- (void)doRequestMethodType:(kHTTPMethodType)method url:(NSString *)url header:(NSDictionary *)header parameter:(NSMutableDictionary *)parameter formData:(MultiPartFormDataBlock)formData progress:(ProgressBlock)progress success:(SuccessBlock)success fail:(FailBlock)fail;
 
 @end
