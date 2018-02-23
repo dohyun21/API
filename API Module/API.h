@@ -18,6 +18,12 @@
 // API Type Enum
 typedef NS_ENUM(NSUInteger, kAPIType) {
     kAPIType_GET_List,          // 리스트 가져오기
+    kAPIType_POST_List,         // 리스트 추가하기
+    kAPIType_POST_UploadImage,  // 이미지 업로드
+    kAPIType_PUT_EditList,      // 리스트 수정하기
+    kAPIType_DELETE_List,       // 리스트 삭제하기
+    kAPIType_HEAD_List,         // HEAD
+    kAPIType_PATCH_List,        // PATCH
 };
 
 // HTTP Method Type
@@ -59,9 +65,19 @@ typedef void(^MultiPartFormDataBlock)(id<AFMultipartFormData> data);
 + (API *)sharedInstance;
 
 #pragma mark - API Request Methods
-- (void)doRequestMethodType:(kHTTPMethodType)method apiType:(kAPIType)apiType parameter:(NSMutableDictionary *)parameter formData:(MultiPartFormDataBlock)formData progress:(ProgressBlock)progress success:(SuccessBlock)success fail:(FailBlock)fail;
-
-/*! @brief Custom Request */
-- (void)doRequestMethodType:(kHTTPMethodType)method url:(NSString *)url header:(NSDictionary *)header parameter:(NSMutableDictionary *)parameter formData:(MultiPartFormDataBlock)formData progress:(ProgressBlock)progress success:(SuccessBlock)success fail:(FailBlock)fail;
+/*! @brief GET */
+- (void)getListWithBar:(NSString *)bar progress:(ProgressBlock)progress success:(SuccessBlock)success failure:(FailBlock)failure;
+/*! @brief POST */
+- (void)postListWithBar:(NSString *)bar progress:(ProgressBlock)progress success:(SuccessBlock)success failure:(FailBlock)failure;
+/*! @brief POST_MultiPart */
+- (void)uploadImageWithBar:(NSString *)bar formData:(MultiPartFormDataBlock)formData progress:(ProgressBlock)progress success:(SuccessBlock)success failure:(FailBlock)failure;
+/*! @brief PUT */
+- (void)putListWithBar:(NSString *)bar success:(SuccessBlock)success failure:(FailBlock)failure;
+/*! @brief DELETE */
+- (void)deleteListWithBar:(NSString *)bar success:(SuccessBlock)success failure:(FailBlock)failure;
+/*! @brief HEAD */
+- (void)headListWithBar:(NSString *)bar success:(SuccessBlock)success failure:(FailBlock)failure;
+/*! @brief PATCH */
+- (void)patchListWithBar:(NSString *)bar success:(SuccessBlock)success failure:(FailBlock)failure;
 
 @end
