@@ -27,13 +27,15 @@
         self.arrayOfAllTasks = [[NSMutableArray alloc] init];
         // APIType EndPoint 주소 지정
         self.endPointDic = [[NSMutableDictionary alloc] initWithDictionary:@{
-                                                                             @(kAPIType_GET_List):@"/getList",
-                                                                             @(kAPIType_POST_List):@"/postList",
-                                                                             @(kAPIType_POST_UploadImage):@"/uploadImage",
-                                                                             @(kAPIType_PUT_EditList):@"/editList",
-                                                                             @(kAPIType_DELETE_List):@"/deleteList",
-                                                                             @(kAPIType_HEAD_List):@"/headList",
-                                                                             @(kAPIType_PATCH_List):@"/patchList",
+                                                                             @(kAPIEndpoint_GET_List):@"/getList",
+                                                                             @(kAPIEndpoint_POST_List):@"/postList",
+                                                                             @(kAPIEndpoint_MULTIPART_UploadImage):@"/uploadImage",
+                                                                             @(kAPIEndpoint_PUT_EditList):@"/editList",
+                                                                             @(kAPIEndpoint_DELETE_List):@"/deleteList",
+                                                                             @(kAPIEndpoint_HEAD_List):@"/headList",
+                                                                             @(kAPIEndpoint_PATCH_List):@"/patchList",
+                                                                             
+                                                                             @(kAPIEndpoint_GET_Test):@"/api/v2/ability/1/",
                                                                              }];
     }
     return self;
@@ -95,10 +97,57 @@
 }
 
 // 최종 Request
-- (void)doRequest:(kHTTPMethodType)method apiType:(kAPIType)apiType parameters:(NSMutableDictionary *)parameters formData:(MultiPartFormDataBlock)formData progress:(ProgressBlock)progress success:(SuccessBlock)success failure:(FailBlock)failure {
+- (void)doRequest:(kHTTPMethodType)method apiType:(kAPIEndpoint)apiType responseType:(kResponseType)responseType parameters:(NSMutableDictionary *)parameters formData:(MultiPartFormDataBlock)formData progress:(ProgressBlock)progress success:(SuccessBlock)success failure:(FailBlock)failure {
     NSString *url = [NSString stringWithFormat:@"%@%@", HOST, _endPointDic[@(apiType)]];
     
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    
+    // ## Set Response Serializer ##
+    switch (responseType) {
+        case kResponseType_HTTP:
+        {
+            AFHTTPResponseSerializer *responseSerializer = [AFHTTPResponseSerializer serializer];
+//            responseSerializer.stringEncoding = NSUTF8StringEncoding;
+            manager.responseSerializer = responseSerializer;
+        }
+            break;
+            
+        case kResponseType_JSON:
+        {
+            AFJSONResponseSerializer *responseSerializer = [AFJSONResponseSerializer serializer];
+            manager.responseSerializer = responseSerializer;
+        }
+            break;
+            
+        case kResponseType_Image:
+        {
+            AFImageResponseSerializer *responseSerializer = [AFImageResponseSerializer serializer];
+            manager.responseSerializer = responseSerializer;
+        }
+            break;
+            
+        case kResponseType_XML:
+        {
+            AFXMLParserResponseSerializer *responseSerializer = [AFXMLParserResponseSerializer serializer];
+            manager.responseSerializer = responseSerializer;
+        }
+            break;
+            
+        case kResponseType_PropertyList:
+        {
+            AFPropertyListResponseSerializer *responseSerializer = [AFPropertyListResponseSerializer serializer];
+            manager.responseSerializer = responseSerializer;
+        }
+            break;
+            
+        default:
+        {
+            AFHTTPResponseSerializer *responseSerializer = [AFHTTPResponseSerializer serializer];
+            manager.responseSerializer = responseSerializer;
+        }
+            break;
+    }
+    
     switch (apiType) {
         default:
             manager.responseSerializer = [AFJSONResponseSerializer serializer];
@@ -155,60 +204,38 @@
 }
 
 #pragma mark - API Request Methods
-/*! @brief GET */
-- (void)getListWithBar:(NSString *)bar progress:(ProgressBlock)progress success:(SuccessBlock)success failure:(FailBlock)failure {
-    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
-    [parameters setValue:bar forKey:@"foo"];
-    
-    [self doRequest:kHTTPMethodType_GET apiType:kAPIType_GET_List parameters:parameters formData:nil progress:progress success:success failure:failure];
+- (void)getEndpoint:(kAPIEndpoint)endpoint responseType:(kResponseType)responseType parameters:(NSMutableDictionary *)parameters progress:(ProgressBlock)progress success:(SuccessBlock)success failure:(FailBlock)failure
+{
+    [self doRequest:kHTTPMethodType_GET apiType:endpoint responseType:responseType parameters:parameters formData:nil progress:progress success:success failure:failure];
 }
 
-/*! @brief POST */
-- (void)postListWithBar:(NSString *)bar progress:(ProgressBlock)progress success:(SuccessBlock)success failure:(FailBlock)failure {
-    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
-    [parameters setValue:bar forKey:@"foo"];
-    
-    [self doRequest:kHTTPMethodType_POST apiType:kAPIType_POST_List parameters:parameters formData:nil progress:progress success:success failure:failure];
+- (void)postEndpoint:(kAPIEndpoint)endpoint responseType:(kResponseType)responseType parameters:(NSMutableDictionary *)parameters progress:(ProgressBlock)progress success:(SuccessBlock)success failure:(FailBlock)failure
+{
+    [self doRequest:kHTTPMethodType_GET apiType:endpoint responseType:responseType parameters:parameters formData:nil progress:progress success:success failure:failure];
 }
 
-/*! @brief POST_MultiPart */
-- (void)uploadImageWithBar:(NSString *)bar formData:(MultiPartFormDataBlock)formData progress:(ProgressBlock)progress success:(SuccessBlock)success failure:(FailBlock)failure {
-    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
-    [parameters setValue:bar forKey:@"foo"];
-    
-    [self doRequest:kHTTPMethodType_POST apiType:kAPIType_POST_List parameters:parameters formData:formData progress:progress success:success failure:failure];
+- (void)multipartEndpoint:(kAPIEndpoint)endpoint responseType:(kResponseType)responseType formData:(MultiPartFormDataBlock)formData parameters:(NSMutableDictionary *)parameters progress:(ProgressBlock)progress success:(SuccessBlock)success failure:(FailBlock)failure
+{
+    [self doRequest:kHTTPMethodType_GET apiType:endpoint responseType:responseType parameters:parameters formData:formData progress:progress success:success failure:failure];
+}
+- (void)putEndpoint:(kAPIEndpoint)endpoint responseType:(kResponseType)responseType parameters:(NSMutableDictionary *)parameters  success:(SuccessBlock)success failure:(FailBlock)failure
+{
+    [self doRequest:kHTTPMethodType_GET apiType:endpoint responseType:responseType parameters:parameters formData:nil progress:nil success:success failure:failure];
 }
 
-/*! @brief PUT */
-- (void)putListWithBar:(NSString *)bar success:(SuccessBlock)success failure:(FailBlock)failure {
-    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
-    [parameters setValue:bar forKey:@"foo"];
-    
-    [self doRequest:kHTTPMethodType_PUT apiType:kAPIType_POST_List parameters:parameters formData:nil progress:nil success:success failure:failure];
+- (void)deleteEndpoint:(kAPIEndpoint)endpoint responseType:(kResponseType)responseType parameters:(NSMutableDictionary *)parameters success:(SuccessBlock)success failure:(FailBlock)failure
+{
+    [self doRequest:kHTTPMethodType_GET apiType:endpoint responseType:responseType parameters:parameters formData:nil progress:nil success:success failure:failure];
 }
 
-/*! @brief DELETE */
-- (void)deleteListWithBar:(NSString *)bar success:(SuccessBlock)success failure:(FailBlock)failure {
-    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
-    [parameters setValue:bar forKey:@"foo"];
-    
-    [self doRequest:kHTTPMethodType_PUT apiType:kAPIType_POST_List parameters:parameters formData:nil progress:nil success:success failure:failure];
+- (void)headEndpoint:(kAPIEndpoint)endpoint responseType:(kResponseType)responseType parameters:(NSMutableDictionary *)parameters success:(SuccessBlock)success failure:(FailBlock)failure
+{
+    [self doRequest:kHTTPMethodType_GET apiType:endpoint responseType:responseType parameters:parameters formData:nil progress:nil success:success failure:failure];
 }
 
-/*! @brief HEAD */
-- (void)headListWithBar:(NSString *)bar success:(SuccessBlock)success failure:(FailBlock)failure {
-    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
-    [parameters setValue:bar forKey:@"foo"];
-    
-    [self doRequest:kHTTPMethodType_PUT apiType:kAPIType_POST_List parameters:parameters formData:nil progress:nil success:success failure:failure];
-}
-
-/*! @brief PATCH */
-- (void)patchListWithBar:(NSString *)bar success:(SuccessBlock)success failure:(FailBlock)failure {
-    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
-    [parameters setValue:bar forKey:@"foo"];
-    
-    [self doRequest:kHTTPMethodType_PUT apiType:kAPIType_POST_List parameters:parameters formData:nil progress:nil success:success failure:failure];
+- (void)patchEndpoint:(kAPIEndpoint)endpoint responseType:(kResponseType)responseType parameters:(NSMutableDictionary *)parameters success:(SuccessBlock)success failure:(FailBlock)failure
+{
+    [self doRequest:kHTTPMethodType_GET apiType:endpoint responseType:responseType parameters:parameters formData:nil progress:nil success:success failure:failure];
 }
 
 @end

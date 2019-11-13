@@ -16,14 +16,17 @@
 #endif
 
 // API Type Enum
-typedef NS_ENUM(NSUInteger, kAPIType) {
-    kAPIType_GET_List,          // 리스트 가져오기
-    kAPIType_POST_List,         // 리스트 추가하기
-    kAPIType_POST_UploadImage,  // 이미지 업로드
-    kAPIType_PUT_EditList,      // 리스트 수정하기
-    kAPIType_DELETE_List,       // 리스트 삭제하기
-    kAPIType_HEAD_List,         // HEAD
-    kAPIType_PATCH_List,        // PATCH
+typedef NS_ENUM(NSUInteger, kAPIEndpoint) {
+    // ################################################################################################
+    // API Examples
+    kAPIEndpoint_GET_List,                      // GET
+    kAPIEndpoint_POST_List,                     // POST
+    kAPIEndpoint_MULTIPART_UploadImage,         // MULTIPART
+    kAPIEndpoint_PUT_EditList,                  // PUT
+    kAPIEndpoint_DELETE_List,                   // DELETE
+    kAPIEndpoint_HEAD_List,                     // HEAD
+    kAPIEndpoint_PATCH_List,                    // PATCH
+    // ################################################################################################
 };
 
 // HTTP Method Type
@@ -35,6 +38,15 @@ typedef NS_ENUM(NSUInteger, kHTTPMethodType) {
     kHTTPMethodType_DELETE,
     kHTTPMethodType_HEAD,
     kHTTPMethodType_PATCH,
+};
+
+// Response Type
+typedef NS_ENUM(NSUInteger, kResponseType) {
+    kResponseType_HTTP,
+    kResponseType_JSON,
+    kResponseType_Image,
+    kResponseType_XML,
+    kResponseType_PropertyList,
 };
 
 @interface API : NSObject
@@ -65,19 +77,12 @@ typedef void(^MultiPartFormDataBlock)(id<AFMultipartFormData> data);
 + (API *)sharedInstance;
 
 #pragma mark - API Request Methods
-/*! @brief GET */
-- (void)getListWithBar:(NSString *)bar progress:(ProgressBlock)progress success:(SuccessBlock)success failure:(FailBlock)failure;
-/*! @brief POST */
-- (void)postListWithBar:(NSString *)bar progress:(ProgressBlock)progress success:(SuccessBlock)success failure:(FailBlock)failure;
-/*! @brief POST_MultiPart */
-- (void)uploadImageWithBar:(NSString *)bar formData:(MultiPartFormDataBlock)formData progress:(ProgressBlock)progress success:(SuccessBlock)success failure:(FailBlock)failure;
-/*! @brief PUT */
-- (void)putListWithBar:(NSString *)bar success:(SuccessBlock)success failure:(FailBlock)failure;
-/*! @brief DELETE */
-- (void)deleteListWithBar:(NSString *)bar success:(SuccessBlock)success failure:(FailBlock)failure;
-/*! @brief HEAD */
-- (void)headListWithBar:(NSString *)bar success:(SuccessBlock)success failure:(FailBlock)failure;
-/*! @brief PATCH */
-- (void)patchListWithBar:(NSString *)bar success:(SuccessBlock)success failure:(FailBlock)failure;
+- (void)getEndpoint:(kAPIEndpoint)endpoint responseType:(kResponseType)responseType parameters:(NSMutableDictionary *)parameters progress:(ProgressBlock)progress success:(SuccessBlock)success failure:(FailBlock)failure;
+- (void)postEndpoint:(kAPIEndpoint)endpoint responseType:(kResponseType)responseType parameters:(NSMutableDictionary *)parameters progress:(ProgressBlock)progress success:(SuccessBlock)success failure:(FailBlock)failure;
+- (void)multipartEndpoint:(kAPIEndpoint)endpoint responseType:(kResponseType)responseType formData:(MultiPartFormDataBlock)formData parameters:(NSMutableDictionary *)parameters progress:(ProgressBlock)progress success:(SuccessBlock)success failure:(FailBlock)failure;
+- (void)putEndpoint:(kAPIEndpoint)endpoint responseType:(kResponseType)responseType parameters:(NSMutableDictionary *)parameters  success:(SuccessBlock)success failure:(FailBlock)failure;
+- (void)deleteEndpoint:(kAPIEndpoint)endpoint responseType:(kResponseType)responseType parameters:(NSMutableDictionary *)parameters success:(SuccessBlock)success failure:(FailBlock)failure;
+- (void)headEndpoint:(kAPIEndpoint)endpoint responseType:(kResponseType)responseType parameters:(NSMutableDictionary *)parameters success:(SuccessBlock)success failure:(FailBlock)failure;
+- (void)patchEndpoint:(kAPIEndpoint)endpoint responseType:(kResponseType)responseType parameters:(NSMutableDictionary *)parameters success:(SuccessBlock)success failure:(FailBlock)failure;
 
 @end
